@@ -62,6 +62,8 @@ jobs:
         run: |
           qemu-system-riscv64 --version
           cargo --version
+          
+          cargo update -p indexmap --precise 2.3.0
 
           ./scripts/total-test.sh | tee tmp.txt
           score=$(cat tmp.txt | tail -n1)
