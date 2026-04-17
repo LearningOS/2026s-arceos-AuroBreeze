@@ -55,11 +55,15 @@ impl<const SIZE: usize> ByteAllocator for EarlyAllocator<SIZE> {
         &mut self,
         layout: core::alloc::Layout,
     ) -> allocator::AllocResult<core::ptr::NonNull<u8>> {
-        let need_size = layout.size();
-        self.b_pos += need_size;
+        let align_mask = layout.align() - 1;
+        let start = (self.b_pos + align_mask) & !align_mask;
+        let end = start + layout.size();
+        if end > self.p_pos {
+            return allocator::AllocResult::Err(allocator::AllocError::NoMemory);
+        }
+        self.b_pos = end;
 
-        allocator::AllocResult::Ok(core::ptr::NonNull::new(self.b_pos as *mut u8).unwrap())
-        // todo!()
+        allocator::AllocResult::Ok(core::ptr::NonNull::new(start as *mut u8).unwrap())
     }
 
     fn dealloc(&mut self, pos: core::ptr::NonNull<u8>, layout: core::alloc::Layout) {
