@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 axstd = { workspace = true, features = ["alloc"], optional = true }
+hashbrown = { version = "0.14", default-features = false, features = ["alloc", "ahash"] }
